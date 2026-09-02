@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>store screenshot stage</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; width: 1280px; height: 800px; overflow: hidden; }
+      body {
+        font: 15px/1.55 "Segoe UI", -apple-system, system-ui, sans-serif;
+        color: #1b1f23;
+        background: #f1efeb;
+      }
+      .banner {
+        height: 104px;
+        background: #0a66c2;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 56px;
+      }
+      .banner h2 { margin: 0; font-size: 27px; font-weight: 600; letter-spacing: -.01em; }
+      .banner p { margin: 5px 0 0; font-size: 15px; opacity: .8; }
+
+      .app { display: flex; gap: 22px; padding: 26px 56px 0 96px; }
+      .feed { width: 640px; }
+      aside { width: 300px; }
+
+      .card {
+        background: #fff;
+        border: 1px solid #e3e1de;
+        border-radius: 9px;
+        padding: 17px 20px 19px;
+        margin-bottom: 14px;
+      }
+      .who { display: flex; align-items: center; gap: 11px; margin-bottom: 11px; }
+      .avatar {
+        width: 44px; height: 44px; border-radius: 50%;
+        background: #cfd6de; flex: none;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 600; color: #5b6874; font-size: 15px;
+      }
+      .name { font-weight: 600; font-size: 14.5px; }
+      .role { color: #6b7178; font-size: 12.5px; }
+      .body { margin: 0; }
+      .actions {
+        display: flex; gap: 26px; margin-top: 15px; padding-top: 11px;
+        border-top: 1px solid #eeecea; color: #6b7178; font-size: 13px;
+      }
+
+      aside .card { padding: 15px 17px; }
+      aside h3 { margin: 0 0 9px; font-size: 13.5px; }
+      aside .item { color: #6b7178; font-size: 12.5px; padding: 5px 0; }
+
+      #cursor { position: fixed; pointer-events: none; z-index: 2147483647; }
+    </style>
+  </head>
+  <body>
+    <div class="banner">
+      <h2 id="cap-title"></h2>
+      <p id="cap-sub"></p>
+    </div>
+
+    <div class="app">
+      <div class="feed">
+        <article class="card">
+          <div class="who">
+            <div class="avatar">MK</div>
+            <div>
+              <div class="name">Mara Kelley</div>
+              <div class="role">Head of Engineering at Northwind &middot; 2h</div>
+            </div>
+          </div>
+          <p class="body">We're hiring backend engineers in Seoul. If you enjoy distributed systems and want to work on payments infrastructure at scale, send me a message.</p>
+          <div class="actions"><span>Like</span><span>Comment</span><span>Repost</span><span>Send</span></div>
+        </article>
+
+        <article class="card">
+          <div class="who">
+            <div class="avatar">DR</div>
+            <div>
+              <div class="name">Dev Ramanathan</div>
+              <div class="role">Product Lead &middot; 5h</div>
+            </div>
+          </div>
+          <p class="body">After six years in product, here is the one lesson I keep relearning: shipping is a habit, not an event. The teams that win are the ones that make releasing boring.</p>
+          <div class="actions"><span>Like</span><span>Comment</span><span>Repost</span><span>Send</span></div>
+        </article>
+
+        <article class="card">
+          <div class="who">
+            <div class="avatar">AS</div>
+            <div>
+              <div class="name">Ana S&oslash;rensen</div>
+              <div class="role">Founder &middot; 1d</div>
+            </div>
+          </div>
+          <p class="body">Thrilled to share that our Series B closed last week. Grateful to every single person who believed in this team early.</p>
+        </article>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>People you may know</h3>
+          <div class="item">Priya Nair &middot; Staff Engineer</div>
+          <div class="item">Tomas Weber &middot; Design Manager</div>
+          <div class="item">Yuki Tanaka &middot; Data Scientist</div>
+        </div>
+        <div class="card">
+          <h3>Trending</h3>
+          <div class="item">Remote work in 2026</div>
+          <div class="item">Payments infrastructure</div>
+        </div>
+      </aside>
+    </div>
+
+    <svg id="cursor" width="26" height="30" viewBox="0 0 26 30" style="left:-100px;top:-100px">
+      <path d="M2 1 L2 22 L7.5 17 L11 26 L15 24 L11.5 15.5 L19 15 Z"
+            fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round" />
+    </svg>
+
+    <script>
+      // Real output from translate.googleapis.com, fetched ahead of time so the
+      // capture never depends on the network. Written as \u escapes so the file
+      // survives any tool that re-encodes it.
+      const TRANSLATIONS = [
+        ["We're hiring backend engineers",
+         '서울에서 백엔드 엔지니어를 채용하고 있습니다. 분산 시스템을 좋아하고 대규모 결제 인프라 작업을 원하시면 저에게 메시지를 보내주세요.'],
+        ['After six years in product',
+         '6년 동안 제품을 사용하면서 제가 계속해서 다시 배우는 교훈은 다음과 같습니다. 배송은 이벤트가 아니라 습관입니다.'],
+        ['Thrilled to share',
+         '시리즈 B가 지난주에 마감되었다는 소식을 전하게 되어 기쁩니다. 일찍부터 이 팀을 믿어주신 모든 분들께 감사드립니다.']
+      ];
+
+      const shot = Number(new URLSearchParams(location.search).get('n') || 1);
+
+      window.chrome = {
+        storage: {
+          sync: {
+            _v: { enabled: true, target: 'ko', delay: 200, maxChars: 600 },
+            get(d, cb) { cb(Object.assign({}, d, this._v)); },
+            set(o) { Object.assign(this._v, o); }
+          },
+          onChanged: { addListener() {} }
+        },
+        runtime: {
+          lastError: null,
+          sendMessage: (msg) => {
+            const hit = TRANSLATIONS.find((t) => msg.text.startsWith(t[0]));
+            return Promise.resolve({ text: hit ? hit[1] : msg.text, src: 'en' });
+          }
+        }
+      };
+
+      const CAPTIONS = {
+        1: ['Hover any text. The translation appears next to your cursor.',
+            'No selecting, no right-clicking, no new tabs.'],
+        2: ['Switch between 17 languages from the left edge.',
+            'The interface follows the language you pick.'],
+        3: ['Tune the hover delay, or switch it off.',
+            'Everything lives in one small popup.']
+      };
+      document.getElementById('cap-title').textContent = CAPTIONS[shot][0];
+      document.getElementById('cap-sub').textContent = CAPTIONS[shot][1];
+
+      const HOVER = { 1: [370, 237] };
+      const cursorEl = document.getElementById('cursor');
+
+      function placeCursor(x, y) {
+        cursorEl.style.left = x + 'px';
+        cursorEl.style.top = y + 'px';
+      }
+
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          // Must sit after the hosts the extension appended, or it renders under them.
+          document.body.appendChild(cursorEl);
+
+          if (shot === 3) {
+            cursorEl.style.display = 'none';
+            const frame = document.createElement('iframe');
+            frame.src = 'popup-demo.html';
+            frame.style.cssText =
+              'position:fixed;top:150px;right:64px;width:304px;height:236px;border:0;' +
+              'border-radius:10px;box-shadow:0 14px 44px rgba(0,0,0,.28);background:#fff;';
+            document.body.appendChild(frame);
+            return;
+          }
+
+          if (shot === 2) {
+            // Open the panel only; no bubble.
+            const root = document.getElementById('lht-panel-host').shadowRoot;
+            root.querySelector('.tab').click();
+            placeCursor(148, 462);
+            return;
+          }
+
+          const [x, y] = HOVER[shot];
+          placeCursor(x, y);
+          // content.js only reads clientX/clientY, so a synthetic event reproduces a hover.
+          document.dispatchEvent(new MouseEvent('mousemove', { clientX: x, clientY: y, bubbles: true }));
+        }, 300);
+      });
+    </script>
+
+    <script src="../langs.js"></script>
+    <script src="../content.js"></script>
+  </body>
+</html>

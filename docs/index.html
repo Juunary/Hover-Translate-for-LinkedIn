@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hover Translate for LinkedIn</title>
+<meta name="description" content="Auto-translates the text you hover over on any LinkedIn page and shows it in a bubble at the top-right of your cursor.">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1b1f23; --muted: #5c6570;
+    --line: #e4e6e8; --accent: #0a66c2; --card: #f7f8f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #14181c; --fg: #e6e8ea; --muted: #9aa3ac;
+            --line: #2b3238; --accent: #6cb0f5; --card: #1b2126; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.6 -apple-system, "Segoe UI", system-ui, sans-serif;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 64px 22px 96px; }
+  .hero { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; }
+  .hero img { width: 56px; height: 56px; border-radius: 12px; }
+  h1 { font-size: 30px; margin: 0; letter-spacing: -.015em; }
+  .tag { color: var(--muted); font-size: 17px; margin: 0 0 30px; }
+  .shot {
+    width: 100%; border: 1px solid var(--line); border-radius: 12px;
+    display: block; margin: 0 0 38px;
+  }
+  h2 { font-size: 19px; margin: 34px 0 10px; }
+  ul { padding-left: 20px; }
+  li { margin: 6px 0; }
+  a { color: var(--accent); }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 30px 0 8px; }
+  .btn {
+    display: inline-block; padding: 9px 16px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--card);
+    color: var(--fg); text-decoration: none; font-size: 15px;
+  }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="hero">
+    <img src="icon.png" alt="">
+    <h1>Hover Translate for LinkedIn</h1>
+  </div>
+  <p class="tag">Read LinkedIn in any language without leaving the page. Hover over any text and the translation appears next to your cursor.</p>
+
+  <img class="shot" src="screenshot.png" alt="A LinkedIn-style post with a translation bubble next to the cursor">
+
+  <h2>How it works</h2>
+  <ul>
+    <li>Rest your cursor on text for 0.2 seconds and the translation appears.</li>
+    <li>Translates the paragraph under your cursor; long paragraphs fall back to the sentence you are pointing at.</li>
+    <li>The bubble never blocks clicks, and disappears the moment you scroll, click, or press <kbd>Esc</kbd>.</li>
+    <li>If the text is already in your language, nothing pops up.</li>
+  </ul>
+
+  <h2>17 languages, one click</h2>
+  <p>A small tab sits on the left edge of the screen showing your current language. Click it, pick another, and it applies instantly — the interface text switches too, including right-to-left support for Arabic and Hebrew.</p>
+
+  <h2>Privacy</h2>
+  <p>No accounts, no analytics, no tracking. The only thing that leaves your browser is the text you hover over, sent to Google's translation service. The extension runs on linkedin.com and nowhere else. Read the full <a href="privacy.html">privacy policy</a>.</p>
+
+  <div class="links">
+    <a class="btn primary" href="privacy.html">Privacy policy</a>
+    <a class="btn" href="https://github.com/Juunary/Hover-Translate-for-LinkedIn">Source on GitHub</a>
+  </div>
+
+  <footer>Hover Translate for LinkedIn is not affiliated with, endorsed by, or sponsored by LinkedIn Corporation or Microsoft.</footer>
+</main>
+</body>
+</html>

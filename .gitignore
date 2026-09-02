@@ -1,0 +1,9 @@
+# Build output
+dist/
+
+# Chrome packaging artifacts
+*.crx
+*.pem
+
+# Generated for screenshot capture
+tools/popup-demo.html

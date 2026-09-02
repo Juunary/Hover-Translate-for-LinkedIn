@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — Hover Translate for LinkedIn</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1b1f23; --muted: #5c6570;
+    --line: #e4e6e8; --accent: #0a66c2; --card: #f7f8f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #14181c; --fg: #e6e8ea; --muted: #9aa3ac;
+            --line: #2b3238; --accent: #6cb0f5; --card: #1b2126; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.65 -apple-system, "Segoe UI", system-ui, sans-serif;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 56px 22px 96px; }
+  h1 { font-size: 27px; margin: 0 0 6px; letter-spacing: -.01em; }
+  .updated { color: var(--muted); font-size: 14px; margin: 0 0 40px; }
+  h2 { font-size: 18px; margin: 38px 0 10px; }
+  p, li { color: var(--fg); }
+  a { color: var(--accent); }
+  .lead {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 16px 18px; margin: 0 0 8px;
+  }
+  table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  code { background: var(--card); padding: 1px 5px; border-radius: 4px; font-size: .9em; }
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Privacy Policy</h1>
+  <p class="updated">Hover Translate for LinkedIn &middot; last updated 11 August 2026</p>
+
+  <p class="lead"><strong>Nothing is collected by the developer.</strong> No server, no analytics, no telemetry, no advertising. The only thing that leaves your browser is the text you hover over, sent to Google's translation service so it can be translated.</p>
+
+  <h2>What the extension does</h2>
+  <p>Hover Translate for LinkedIn translates the text you hover over on LinkedIn pages and displays the result in a bubble next to your cursor.</p>
+
+  <h2>What is transmitted, and to whom</h2>
+  <p>When you hover over text on a LinkedIn page, the extension sends <strong>that text only</strong> to Google's public translation endpoint (<code>https://translate.googleapis.com</code>) in order to translate it. Nothing else is sent.</p>
+  <ul>
+    <li>The request contains the hovered text and your chosen target language.</li>
+    <li>No account identifiers, cookies, or credentials are attached — requests are made with <code>credentials: "omit"</code>.</li>
+    <li>Google's handling of that request is governed by the <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.</li>
+  </ul>
+  <p>Do not hover over confidential text you would not want sent to a third-party translation service.</p>
+
+  <h2>What is stored</h2>
+  <p>Your preferences — enabled/disabled, target language, hover delay, and maximum paragraph length — are stored with <code>chrome.storage.sync</code>. They sync through your own Chrome profile and are never sent to the developer.</p>
+  <p>Translated results are cached in memory only, up to 500 recent entries, and are discarded when the browser closes.</p>
+
+  <h2>Permissions</h2>
+  <table>
+    <tr><th>Permission</th><th>Why</th></tr>
+    <tr><td><code>storage</code></td><td>Save your settings</td></tr>
+    <tr><td><code>translate.googleapis.com</code></td><td>Send hovered text for translation</td></tr>
+    <tr><td>Content script on <code>linkedin.com</code></td><td>Detect the text under your cursor and draw the bubble</td></tr>
+  </table>
+  <p>The extension runs only on <code>linkedin.com</code>. It cannot read any other site.</p>
+
+  <h2>Data sale and transfer</h2>
+  <p>No data is sold, rented, or transferred to any third party, other than the translation request described above.</p>
+
+  <h2>Contact</h2>
+  <p>Open an issue on <a href="https://github.com/Juunary/Hover-Translate-for-LinkedIn/issues">GitHub</a>.</p>
+
+  <footer>Hover Translate for LinkedIn is not affiliated with, endorsed by, or sponsored by LinkedIn Corporation or Microsoft.</footer>
+</main>
+</body>
+</html>
