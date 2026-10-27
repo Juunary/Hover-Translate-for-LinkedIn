@@ -138,7 +138,7 @@ powershell -ExecutionPolicy Bypass -File tools\capture.ps1
 powershell -ExecutionPolicy Bypass -File package.ps1
 ```
 
-This writes `dist/hover-translate-for-linkedin-1.0.0.zip` containing only the runtime files — `manifest.json` sits at the root of the archive, which is what the store requires. Docs, the 512 px master icon, and the packaging script itself are excluded.
+This writes `dist/hover-translate-for-linkedin-1.1.0.zip` containing only the runtime files — `manifest.json` sits at the root of the archive, which is what the store requires. Docs, the 512 px master icon, and the packaging script itself are excluded.
 
 ## 6. Submitting
 
