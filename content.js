@@ -3,6 +3,7 @@
 
   const DEFAULTS = {
     enabled: true,
+    selection: true, // 드래그로 선택한 부분만 번역
     target: 'ko',
     delay: 200,      // 커서가 멈춘 뒤 번역까지의 딜레이(ms)
     maxChars: 600    // 이보다 긴 블록은 커서 위치의 문장만 번역
@@ -99,22 +100,31 @@
     return bubble;
   }
 
-  function place(x, y) {
+  // anchor: { x, top, bottom } — 말풍선을 top 위에 붙이고, 공간이 없으면 bottom 아래로 내린다.
+  function pointAnchor(x, y) {
+    return { x, top: y, bottom: y + 8 };
+  }
+
+  function place(anchor) {
     const margin = 8;
     const rect = bubble.getBoundingClientRect();
 
-    // 기본: 커서의 우측 상단
-    let left = x + 14;
-    let top = y - rect.height - 12;
+    // 기본: 기준점의 우측 상단
+    let left = anchor.x + 14;
+    let top = anchor.top - rect.height - 12;
     let flip = false;
 
     if (left + rect.width > window.innerWidth - margin) {
       left = Math.max(margin, window.innerWidth - rect.width - margin);
     }
     if (top < margin) {
-      // 위쪽 공간이 없으면 커서 아래로
-      top = y + 20;
+      // 위쪽 공간이 없으면 아래로
+      top = anchor.bottom + 12;
       flip = true;
+      // 아래도 넘치면 화면 안으로 당긴다 (긴 선택 영역)
+      if (top + rect.height > window.innerHeight - margin) {
+        top = Math.max(margin, window.innerHeight - rect.height - margin);
+      }
     }
 
     bubble.classList.toggle('flip', flip);
@@ -122,7 +132,7 @@
     bubble.style.top = `${Math.round(top)}px`;
   }
 
-  function render(content, x, y, opts = {}) {
+  function render(content, anchor, opts = {}) {
     ensureBubble();
     bubble.textContent = '';
 
@@ -141,13 +151,14 @@
 
     bubble.style.visibility = 'hidden';
     bubble.style.display = 'block';
-    place(x, y);
+    place(anchor);
     bubble.style.visibility = 'visible';
     requestAnimationFrame(() => bubble && bubble.classList.add('show'));
   }
 
   function hide() {
     currentText = null;
+    pinned = null;
     requestId++;
     if (timer) { clearTimeout(timer); timer = null; }
     if (!bubble) return;
@@ -411,19 +422,15 @@
   let timer = null;
   let requestId = 0;
   let currentText = null;
+  let pinned = null; // 선택 번역 중인 선택 영역 문자열. 떠 있는 동안 호버 번역은 쉰다.
   let lastX = -1;
   let lastY = -1;
 
-  async function run(x, y) {
-    const text = textAt(x, y);
-
-    if (!text) { hide(); return; }
-    if (text === currentText) return; // 같은 문단 위를 움직이는 중 → 유지
-
+  async function translateAndShow(text, anchor, suffix = '') {
     currentText = text;
     const id = ++requestId;
 
-    render(t('loading'), x, y, { loading: true });
+    render(t('loading'), anchor, { loading: true });
 
     let res;
     try {
@@ -436,18 +443,84 @@
     if (id !== requestId) return; // 그 사이 커서가 다른 곳으로 이동
 
     if (!res || res.error || !res.text) {
-      render(t('error'), x, y, { loading: true });
+      render(t('error'), anchor, { loading: true });
       return;
     }
     if (res.src && res.src === settings.target) { hide(); return; } // 이미 목표 언어
 
-    render(res.text, x, y, { src: res.src });
+    render(res.text + suffix, anchor, { src: res.src });
   }
+
+  function run(x, y) {
+    const text = textAt(x, y);
+
+    if (!text) { hide(); return; }
+    if (text === currentText) return; // 같은 문단 위를 움직이는 중 → 유지
+
+    translateAndShow(text, pointAnchor(x, y));
+  }
+
+  /* ------------------------------------------------------------ 선택 번역 */
+
+  function isEditable(node) {
+    const el = node && (node.nodeType === Node.TEXT_NODE ? node.parentElement : node);
+    return !!(el && el.isContentEditable);
+  }
+
+  function translateSelection(x) {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || sel.rangeCount === 0) return;
+
+    // 입력창·글쓰기 창에서 고르는 건 편집하려는 것이므로 건드리지 않는다.
+    const active = document.activeElement;
+    if (active && (SKIP_TAGS.has(active.tagName) || active.isContentEditable)) return;
+    if (isEditable(sel.anchorNode) || isEditable(sel.focusNode)) return;
+
+    const raw = sel.toString();
+    let text = raw.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+    if (!/[\p{L}\p{N}]/u.test(text)) return;
+
+    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    if (!rect.width && !rect.height) return;
+
+    let suffix = '';
+    if (text.length > HARD_LIMIT) {
+      text = text.slice(0, HARD_LIMIT).trim();
+      suffix = ' …';
+    }
+
+    if (timer) { clearTimeout(timer); timer = null; }
+    pinned = raw;
+    translateAndShow(text, {
+      x: Math.min(Math.max(x, rect.left), rect.right), // 줄 끝 여백까지 끌었어도 선택 영역 안에 붙인다
+      top: rect.top,
+      bottom: rect.bottom
+    }, suffix);
+  }
+
+  document.addEventListener(
+    'mouseup',
+    (e) => {
+      if (e.button !== 0 || !settings.enabled || !settings.selection) return;
+      if (e.target === panelHost) return;
+      const x = e.clientX;
+      // 선택 영역은 mouseup 기본 동작이 끝난 뒤에 확정된다.
+      setTimeout(() => translateSelection(x), 0);
+    },
+    true
+  );
+
+  document.addEventListener('selectionchange', () => {
+    if (pinned === null) return;
+    const sel = window.getSelection();
+    if (!sel || sel.toString() !== pinned) hide(); // 선택이 풀리거나 바뀌면 말풍선도 치운다
+  });
 
   document.addEventListener(
     'mousemove',
     (e) => {
-      if (!settings.enabled) return;
+      if (!settings.enabled || pinned !== null) return;
+      if (e.buttons & 1) return; // 드래그로 선택하는 중에는 호버 번역을 하지 않는다
       if (Math.abs(e.clientX - lastX) < 3 && Math.abs(e.clientY - lastY) < 3) return;
 
       lastX = e.clientX;
@@ -459,7 +532,8 @@
     true
   );
 
-  document.addEventListener('mouseleave', hide, true);
+  // 캡처 단계로 document 에 걸면 요소 경계를 넘을 때마다 불리므로, 페이지 밖으로 나갈 때만 받는다.
+  document.documentElement.addEventListener('mouseleave', hide);
   window.addEventListener('blur', hide);
   window.addEventListener('scroll', hide, true);
   window.addEventListener('wheel', hide, { passive: true });
@@ -498,7 +572,8 @@
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== 'sync') return;
     for (const key of Object.keys(changes)) settings[key] = changes[key].newValue;
-    if (!settings.enabled || changes.target) hide(); // 언어가 바뀌면 다음 호버에서 다시 번역
+    // 언어가 바뀌면 다음 호버에서 다시 번역
+    if (!settings.enabled || changes.target || (pinned !== null && !settings.selection)) hide();
     updatePanel();
   });
 })();

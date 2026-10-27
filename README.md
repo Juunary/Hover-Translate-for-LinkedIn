@@ -12,6 +12,15 @@ A Chrome extension that auto-translates the text you hover over on any LinkedIn 
 - It disappears immediately on scroll, click, `Esc`, or when the window loses focus.
 - Translation uses the public Google Translate endpoint (`translate.googleapis.com`) — no API key required. Up to 500 recent results are cached in memory.
 
+## Translating a selection
+
+- **Drag to select** any part of the text (or double-click a word) and only that part is translated. The bubble sits just above the selection.
+- While the selection bubble is open, hover translation pauses, so you can move the cursor around without losing it.
+- It closes when you click elsewhere, press `Esc`, scroll, or change the selection.
+- Selections inside text boxes and the post/comment composer are ignored — selecting text to edit it never pops up a bubble.
+- Selections over 1,200 characters are cut at 1,200, and the bubble ends with `…`.
+- Turn it off with **Translate selected text** in the popup.
+
 ## Choosing a language
 
 A tab (🌐 + the current language code) is pinned to the **middle of the left edge** of the screen. Click it to open the language list; picking one applies immediately.
@@ -38,6 +47,7 @@ The target language can be changed straight from the left-edge panel; everything
 | Setting | Default | Description |
 | --- | --- | --- |
 | Enabled | on | Global on/off |
+| Translate selected text | on | Translate just the part you drag-select |
 | Target language | Korean | Language to translate into |
 | Delay | 200 ms | How long the cursor must rest before translating |
 | Max paragraph length | 600 | Longer paragraphs fall back to sentence-level translation |
@@ -47,7 +57,7 @@ The target language can be changed straight from the left-edge panel; everything
 | File | Role |
 | --- | --- |
 | `manifest.json` | MV3 manifest |
-| `content.js` | Text extraction under the cursor, bubble rendering, left-edge language panel |
+| `content.js` | Text extraction under the cursor, selection translation, bubble rendering, left-edge language panel |
 | `langs.js` | Language list and UI strings (shared by the content script and the popup) |
 | `background.js` | Translation API calls + cache (works around CORS) |
 | `popup.html` / `popup.js` | Settings UI |

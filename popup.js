@@ -1,7 +1,8 @@
-const DEFAULTS = { enabled: true, target: 'ko', delay: 200, maxChars: 600 };
+const DEFAULTS = { enabled: true, selection: true, target: 'ko', delay: 200, maxChars: 600 };
 
 const fields = {
   enabled: document.getElementById('enabled'),
+  selection: document.getElementById('selection'),
   target: document.getElementById('target'),
   delay: document.getElementById('delay'),
   maxChars: document.getElementById('maxChars')
@@ -17,6 +18,7 @@ for (const lang of LHT_LANGS) {
 chrome.storage.sync.get(DEFAULTS, (stored) => {
   const s = { ...DEFAULTS, ...stored };
   fields.enabled.checked = s.enabled;
+  fields.selection.checked = s.selection;
   fields.target.value = s.target;
   fields.delay.value = s.delay;
   fields.maxChars.value = s.maxChars;
@@ -25,6 +27,7 @@ chrome.storage.sync.get(DEFAULTS, (stored) => {
 function save() {
   chrome.storage.sync.set({
     enabled: fields.enabled.checked,
+    selection: fields.selection.checked,
     target: fields.target.value,
     delay: Math.min(3000, Math.max(0, Number(fields.delay.value) || DEFAULTS.delay)),
     maxChars: Math.min(1200, Math.max(80, Number(fields.maxChars.value) || DEFAULTS.maxChars))
